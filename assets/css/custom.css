@@ -226,6 +226,10 @@ a:hover .gh-card-title, a:hover .gh-article-title {
 
 .gh-foot-meta { display: none; }
 
+/* Hide Ghost search trigger + modal */
+[data-ghost-search],
+#sodo-search-root { display: none !important; }
+
 
 /* ASCII shooting stars in the backdrop
 /* ---------------------------------------------------------- */
