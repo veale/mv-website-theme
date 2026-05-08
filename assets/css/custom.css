@@ -31,6 +31,7 @@
 h1, h2, h3, h4, h5, h6,
 .gh-head-title,
 .site-title,
+.gh-head-logo,
 .gh-article-title,
 .gh-card-title,
 .gh-canvas h1,
@@ -56,12 +57,21 @@ h1, h2, h3, h4, h5, h6,
 
 @media (prefers-reduced-motion: reduce) {
     h1, h2, h3, h4, h5, h6,
-    .gh-head-title, .site-title,
+    .gh-head-title, .site-title, .gh-head-logo,
     .gh-article-title, .gh-card-title,
     .gh-canvas h1, .gh-canvas h2, .gh-canvas h3 {
         animation: none;
         background-position-x: 50%;
     }
+}
+
+/* Site title (the blog name) — bigger, bolder, in the pixel font */
+.gh-head-logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(4.4rem, 8vw, 7.2rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
 }
 
 
@@ -91,7 +101,6 @@ h1, h2, h3, h4, h5, h6,
         width: 100%;
     }
     .has-radial-nav .gh-head-logo {
-        font-size: clamp(2.4rem, 4vw, 3.6rem);
         padding: 0;
     }
 }
