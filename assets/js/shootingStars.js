@@ -12,8 +12,8 @@ const GLYPHS = [
 const TRAVEL_ANGLE_DEG = -135; // motion direction in CSS coords (top-right → bottom-left)
 const TRAIL_ROTATION_DEG = -45; // visual rotation that puts trail to upper-right of head
 
-const MIN_INTERVAL = 3500;
-const MAX_INTERVAL = 14000;
+const MIN_INTERVAL = 1500;
+const MAX_INTERVAL = 6000;
 const MIN_DURATION = 1800;
 const MAX_DURATION = 3500;
 const MAX_CONCURRENT = 2;
@@ -56,8 +56,8 @@ const spawn = () => {
     const anim = star.animate(
         [
             { transform: `translate(${startX}px, ${startY}px) rotate(${TRAIL_ROTATION_DEG}deg)`, opacity: 0 },
-            { opacity: 0.22, offset: 0.15 },
-            { opacity: 0.22, offset: 0.85 },
+            { opacity: 0.55, offset: 0.15 },
+            { opacity: 0.55, offset: 0.85 },
             { transform: `translate(${endX}px, ${endY}px) rotate(${TRAIL_ROTATION_DEG}deg)`, opacity: 0 },
         ],
         {

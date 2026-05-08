@@ -25,7 +25,8 @@ production stylesheet in assets/built/screen.css using: npm run dev
 @import "ghost/pagination.css";
 @import "ghost/comments.css";
 
-/* Custom overrides (last so they win specificity ties) */
+/* Custom overrides — keep at end of import block; use higher specificity or !important
+   in custom.css for rules that must beat index.css's own body rules. */
 @import "custom.css";
 
 
@@ -259,3 +260,4 @@ html,
         font-size: 1.6rem;
     }
 }
+

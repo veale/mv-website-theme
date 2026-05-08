@@ -29,6 +29,14 @@
 
 :root {
     --font-sans-serif: "Ranade", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+    --font-serif: "Ranade", Georgia, Times, serif;
+}
+
+/* Force Ranade everywhere body text appears, including content blocks that hard-code fonts. */
+body,
+.gh-content,
+.gh-content :where(p, li, blockquote, dl, dd, dt, figcaption) {
+    font-family: var(--font-sans-serif);
 }
 
 @property --rainbow-shift {
@@ -247,7 +255,6 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    contain: strict;
 }
 
 .shooting-star {
@@ -256,24 +263,24 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     left: 0;
     transform-origin: 0 0;
     font-family: var(--font-display);
-    font-size: 14px;
+    font-size: 16px;
     letter-spacing: 0.05em;
-    color: oklch(60% 0.005 270 / 0.55);
+    color: oklch(45% 0.005 270);
     white-space: pre;
     will-change: transform, opacity;
     /* Fade the trail away from the head (head sits at left edge of the unrotated string). */
-    -webkit-mask-image: linear-gradient(to right, black 0%, black 25%, transparent 100%);
-    mask-image: linear-gradient(to right, black 0%, black 25%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 0%, black 30%, transparent 100%);
+    mask-image: linear-gradient(to right, black 0%, black 30%, transparent 100%);
 }
 
 
-/* Equal-sized post grid — undo the "first card spans full width" rule
-/* ---------------------------------------------------------- */
+/* Equal-sized post grid — undo the "first card spans full width" rule.
+   index.css's own body rules come AFTER this @import, so we need !important to win. */
 
 .gh-postfeed > *:first-child {
-    grid-column: auto;
+    grid-column: auto !important;
 }
 .gh-card-image,
 .gh-card-image:first-of-type {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 9 !important;
 }

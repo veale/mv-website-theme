@@ -4,11 +4,16 @@
 
         {{#match pagination.page "1"}}
         {{#get "pages" filter="slug:home-intro" limit="1"}}
-            {{#foreach pages}}
-            <section class="gh-home-intro">
-                {{content}}
-            </section>
-            {{/foreach}}
+            {{#if pages}}
+                {{#foreach pages}}
+                <section class="gh-home-intro">{{content}}</section>
+                {{/foreach}}
+            {{else}}
+                <section class="gh-home-intro gh-home-intro--placeholder">
+                    <p><strong>Add your intro text here.</strong></p>
+                    <p>In Ghost Admin, create a new <em>Page</em> (any title), open the settings sidebar, and set its URL slug to <code>home-intro</code>. Whatever you write in that page's body will appear in this space.</p>
+                </section>
+            {{/if}}
         {{/get}}
         {{/match}}
 
