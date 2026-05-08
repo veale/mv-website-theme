@@ -55,6 +55,50 @@ h1, h2, h3, h4, h5, h6,
     to   { --rainbow-shift: 100%; }
 }
 
+/* Bright bands palette for the hover "screen drop" effect.
+   Sharp stops (each color occupies exactly 1/8 of the gradient) so
+   transitions between bands show as a hard edge sliding down. */
+:root {
+    --rainbow-bright:
+        oklch(72% 0.25 25),
+        oklch(78% 0.20 60),
+        oklch(88% 0.20 100),
+        oklch(78% 0.25 145),
+        oklch(75% 0.18 200),
+        oklch(65% 0.28 265),
+        oklch(65% 0.30 320),
+        oklch(72% 0.25 25);
+    --rainbow-bands: linear-gradient(
+        to bottom,
+        oklch(72% 0.25 25)  0%,    oklch(72% 0.25 25)  12.5%,
+        oklch(78% 0.20 60)  12.5%, oklch(78% 0.20 60)  25%,
+        oklch(88% 0.20 100) 25%,   oklch(88% 0.20 100) 37.5%,
+        oklch(78% 0.25 145) 37.5%, oklch(78% 0.25 145) 50%,
+        oklch(75% 0.18 200) 50%,   oklch(75% 0.18 200) 62.5%,
+        oklch(65% 0.28 265) 62.5%, oklch(65% 0.28 265) 75%,
+        oklch(65% 0.30 320) 75%,   oklch(65% 0.30 320) 87.5%,
+        oklch(72% 0.25 25)  87.5%, oklch(72% 0.25 25)  100%
+    );
+}
+
+@keyframes rainbow-drop {
+    from { background-position-y: 0%; }
+    to   { background-position-y: 100%; }
+}
+
+/* Hover: swap to vertical bands and animate them downward. */
+h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover,
+.gh-head-title:hover, .site-title:hover, .gh-head-logo:hover,
+.gh-article-title:hover, .gh-card-title:hover,
+.gh-canvas h1:hover, .gh-canvas h2:hover, .gh-canvas h3:hover,
+a:hover h1, a:hover h2, a:hover h3, a:hover h4, a:hover h5, a:hover h6,
+a:hover .gh-card-title, a:hover .gh-article-title {
+    background-image: var(--rainbow-bands);
+    background-size: 100% 800%;
+    background-position-x: 0;
+    animation: rainbow-drop 1.2s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
     h1, h2, h3, h4, h5, h6,
     .gh-head-title, .site-title, .gh-head-logo,
@@ -128,6 +172,11 @@ h1, h2, h3, h4, h5, h6,
 .radial-nav a:hover,
 .radial-nav a:focus { opacity: 1; }
 
+.radial-nav a:hover text,
+.radial-nav a:focus text {
+    fill: url(#radial-bands);
+}
+
 
 /* Homepage intro region (Ghost page with slug "home-intro")
 /* ---------------------------------------------------------- */
@@ -154,6 +203,42 @@ h1, h2, h3, h4, h5, h6,
 /* ---------------------------------------------------------- */
 
 .gh-foot-meta { display: none; }
+
+
+/* ASCII shooting stars in the backdrop
+/* ---------------------------------------------------------- */
+
+/* Lift content above the stars layer; let body white show through gh-viewport. */
+.gh-viewport {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+.shooting-stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    contain: strict;
+}
+
+.shooting-star {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    color: oklch(60% 0.005 270 / 0.55);
+    white-space: pre;
+    will-change: transform, opacity;
+    /* Fade the trail away from the head (head sits at left edge of the unrotated string). */
+    -webkit-mask-image: linear-gradient(to right, black 0%, black 25%, transparent 100%);
+    mask-image: linear-gradient(to right, black 0%, black 25%, transparent 100%);
+}
 
 
 /* Equal-sized post grid — undo the "first card spans full width" rule

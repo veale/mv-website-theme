@@ -31,6 +31,18 @@ const RAINBOW_STOPS = [
     "oklch(38% 0.16 25)",
 ];
 
+// Brighter palette + sharp band stops for hover "screen drop" effect.
+const BRIGHT_STOPS = [
+    "oklch(72% 0.25 25)",
+    "oklch(78% 0.20 60)",
+    "oklch(88% 0.20 100)",
+    "oklch(78% 0.25 145)",
+    "oklch(75% 0.18 200)",
+    "oklch(65% 0.28 265)",
+    "oklch(65% 0.30 320)",
+    "oklch(72% 0.25 25)",
+];
+
 const buildRainbowGradient = (id, x1, x2, animate) => {
     const grad = svg("linearGradient", {
         id,
@@ -52,6 +64,36 @@ const buildRainbowGradient = (id, x1, x2, animate) => {
             from: "0 0",
             to: `${span} 0`,
             dur: "24s",
+            repeatCount: "indefinite",
+        }));
+    }
+    return grad;
+};
+
+// Vertical gradient with hard-edged color bands; one band per `bandPx` of vertical space.
+// Tiles via spreadMethod=repeat. SMIL animates a translateY by one full pattern length so
+// a band appears to drop continuously through the text.
+const buildBandGradient = (id, bandPx, colors, animate) => {
+    const totalPx = bandPx * colors.length;
+    const grad = svg("linearGradient", {
+        id,
+        gradientUnits: "userSpaceOnUse",
+        x1: 0, y1: 0, x2: 0, y2: totalPx,
+        spreadMethod: "repeat",
+    });
+    colors.forEach((color, i) => {
+        const start = (i / colors.length) * 100;
+        const end = ((i + 1) / colors.length) * 100;
+        grad.appendChild(svg("stop", { offset: `${start}%`, "stop-color": color }));
+        grad.appendChild(svg("stop", { offset: `${end}%`, "stop-color": color }));
+    });
+    if (animate) {
+        grad.appendChild(svg("animateTransform", {
+            attributeName: "gradientTransform",
+            type: "translate",
+            from: "0 0",
+            to: `0 ${totalPx}`,
+            dur: "1.4s",
             repeatCount: "indefinite",
         }));
     }
@@ -141,6 +183,8 @@ export default function radialNav() {
     const defs = svg("defs");
     // One repeating gradient half the SVG width — translating by that span loops seamlessly.
     defs.appendChild(buildRainbowGradient("radial-rainbow", 0, W / 2, !reduceMotion));
+    // Vertical sharp-band gradient for hover. ~28px per band, repeating, scrolling downward fast.
+    defs.appendChild(buildBandGradient("radial-bands", 28, BRIGHT_STOPS, !reduceMotion));
     defs.appendChild(svg("path", { id: "radial-arc-inner", d: arcPath(cx, cy, rInner), fill: "none" }));
     defs.appendChild(svg("path", { id: "radial-arc-outer", d: arcPath(cx, cy, rOuter), fill: "none" }));
     root.appendChild(defs);

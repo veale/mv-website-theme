@@ -7,9 +7,11 @@ import "../css/index.css";
 import menuOpen from "./menuOpen";
 import infiniteScroll from "./infiniteScroll";
 import radialNav from "./radialNav";
+import shootingStars from "./shootingStars";
 
 
 // Call the menu and infinite scroll functions
 menuOpen();
 infiniteScroll();
 radialNav();
+shootingStars();
