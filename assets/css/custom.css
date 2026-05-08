@@ -63,3 +63,100 @@ h1, h2, h3, h4, h5, h6,
         background-position-x: 50%;
     }
 }
+
+
+/* Radial navigation
+/* ---------------------------------------------------------- */
+
+/* When JS injects the SVG, hide the original list on desktop and let the SVG arcs sit centred above the title. */
+@media (min-width: 901px) {
+    .has-radial-nav .gh-head-inner {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "menu"
+            "brand"
+            "actions";
+        grid-gap: 0;
+        align-items: center;
+        justify-items: center;
+    }
+    .has-radial-nav .gh-head-menu { grid-area: menu; }
+    .has-radial-nav .gh-head-brand { grid-area: brand; max-width: none; }
+    .has-radial-nav .gh-head-actions { grid-area: actions; padding-top: 1rem; }
+
+    .has-radial-nav .gh-head-menu .nav { display: none; }
+    .has-radial-nav .gh-head-menu {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    .has-radial-nav .gh-head-logo {
+        font-size: clamp(2.4rem, 4vw, 3.6rem);
+        padding: 0;
+    }
+}
+
+/* SVG only shown on desktop */
+.radial-nav { display: none; }
+@media (min-width: 901px) {
+    .radial-nav {
+        display: block;
+        width: min(900px, 90vw);
+        height: auto;
+        margin-bottom: -1.5rem; /* tuck title up against arc */
+        overflow: visible;
+    }
+}
+
+.radial-nav text {
+    font-family: var(--font-display);
+    font-weight: 500;
+    fill: oklch(35% 0.02 270);
+    letter-spacing: 0.04em;
+    transition: fill 0.3s ease;
+}
+.radial-nav-arc--outer text { fill: oklch(45% 0.04 270); }
+
+.radial-nav a:hover text,
+.radial-nav a:focus text {
+    fill: oklch(50% 0.18 25);
+}
+
+
+/* Homepage intro region (Ghost page with slug "home-intro")
+/* ---------------------------------------------------------- */
+
+.gh-home-intro {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 6vmin 2vmin 4vmin;
+    text-align: center;
+    font-size: 1.7rem;
+    line-height: 1.55;
+}
+
+.gh-home-intro :where(p, h2, h3) {
+    margin: 0 0 1em;
+}
+
+.gh-home-intro :where(h2, h3) {
+    font-family: var(--font-display);
+}
+
+
+/* Hide "Published with Ghost" footer credit
+/* ---------------------------------------------------------- */
+
+.gh-foot-meta { display: none; }
+
+
+/* Equal-sized post grid — undo the "first card spans full width" rule
+/* ---------------------------------------------------------- */
+
+.gh-postfeed > *:first-child {
+    grid-column: auto;
+}
+.gh-card-image,
+.gh-card-image:first-of-type {
+    aspect-ratio: 16 / 9;
+}

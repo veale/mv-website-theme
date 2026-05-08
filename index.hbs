@@ -2,6 +2,16 @@
 <div class="gh-page">
     <div class="gh-container">
 
+        {{#match pagination.page "1"}}
+        {{#get "pages" filter="slug:home-intro" limit="1"}}
+            {{#foreach pages}}
+            <section class="gh-home-intro">
+                {{content}}
+            </section>
+            {{/foreach}}
+        {{/get}}
+        {{/match}}
+
         <div class="gh-postfeed">
         {{#foreach posts}}
 
