@@ -256,16 +256,18 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     position: absolute;
     top: 0;
     left: 0;
-    transform-origin: 0 0;
-    font-family: var(--font-display);
-    font-size: 22px;
-    letter-spacing: 0.08em;
-    color: oklch(30% 0.005 270);
+    /* Pivot around the sparkle's body (≈ col 2, row 1.5 in monospace) so the visual head sits
+       at the translated point, not the element's corner. */
+    transform-origin: 2ch 0.75em;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 18px;
+    line-height: 1;
+    color: oklch(40% 0.005 270);
     white-space: pre;
     will-change: transform, opacity;
-    /* Fade the trail away from the head (head sits at left edge of the unrotated string). */
-    -webkit-mask-image: linear-gradient(to right, black 0%, black 30%, transparent 100%);
-    mask-image: linear-gradient(to right, black 0%, black 30%, transparent 100%);
+    /* Trail mask: opaque at the head end, fading out along the trail. */
+    -webkit-mask-image: linear-gradient(to right, black 0%, black 25%, transparent 100%);
+    mask-image: linear-gradient(to right, black 0%, black 25%, transparent 100%);
 }
 
 

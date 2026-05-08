@@ -1,19 +1,20 @@
 // Subtle ASCII shooting stars: occasional, max 2 on screen at once, top-right → bottom-left.
 // Random spawn cadence, random start offset along the perpendicular to the trajectory.
 
+// Multi-line ASCII sparkle with the cross-shaped star at columns 0-2 of row 1, trail extending right.
+// Three rows so the perpendicular rays of the sparkle are visible above/below the body.
 const GLYPHS = [
-    "*  ·  ·  ·  ·",
-    "*  .  .  .  .  .",
-    "*  -  -  -  -",
-    "*  ~  ~  ~",
-    "*  ·  ·  ·",
+    "  .  \n.<*>.  ·   ·    ·     ·     ·\n  '  ",
+    "  '  \n-<+>-  -    -     -      -\n  ,  ",
+    "  |  \n-<*>-  ·   ·    ·     ·\n  |  ",
+    "  .  \n,(*),  -  -   -    -     -\n  '  ",
 ];
 
-const TRAVEL_ANGLE_DEG = -135; // motion direction in CSS coords (top-right → bottom-left)
-const TRAIL_ROTATION_DEG = -45; // visual rotation that puts trail to upper-right of head
+const TRAVEL_ANGLE_DEG = 135;   // top-right → bottom-left in screen coords (y-down)
+const TRAIL_ROTATION_DEG = -45; // rotates the element so its trail points to upper-right
 
-const MIN_INTERVAL = 1500;
-const MAX_INTERVAL = 6000;
+const MIN_INTERVAL = 4000;
+const MAX_INTERVAL = 12000;
 const MIN_DURATION = 1800;
 const MAX_DURATION = 3500;
 const MAX_CONCURRENT = 2;
@@ -55,8 +56,8 @@ const spawn = () => {
     const anim = star.animate(
         [
             { transform: `translate(${startX}px, ${startY}px) rotate(${TRAIL_ROTATION_DEG}deg)`, opacity: 0 },
-            { opacity: 1, offset: 0.15 },
-            { opacity: 1, offset: 0.85 },
+            { opacity: 0.7, offset: 0.15 },
+            { opacity: 0.7, offset: 0.85 },
             { transform: `translate(${endX}px, ${endY}px) rotate(${TRAIL_ROTATION_DEG}deg)`, opacity: 0 },
         ],
         {
@@ -78,8 +79,5 @@ const tick = () => {
 };
 
 export default function shootingStars() {
-    console.log("[shootingStars] init; reduced-motion =",
-        matchMedia("(prefers-reduced-motion: reduce)").matches);
-    spawn(); // fire one immediately so we can confirm visibility
-    tick();
+    setTimeout(tick, 1500 + Math.random() * 3000);
 }
