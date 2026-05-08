@@ -111,16 +111,13 @@ h1, h2, h3, h4, h5, h6,
 .radial-nav text {
     font-family: var(--font-display);
     font-weight: 500;
-    fill: oklch(35% 0.02 270);
     letter-spacing: 0.04em;
-    transition: fill 0.3s ease;
+    transition: opacity 0.3s ease;
 }
-.radial-nav-arc--outer text { fill: oklch(45% 0.04 270); }
 
-.radial-nav a:hover text,
-.radial-nav a:focus text {
-    fill: oklch(50% 0.18 25);
-}
+.radial-nav a { opacity: 0.85; }
+.radial-nav a:hover,
+.radial-nav a:focus { opacity: 1; }
 
 
 /* Homepage intro region (Ghost page with slug "home-intro")
