@@ -1,7 +1,7 @@
 {
-    "name": "ghost-starter-theme",
-    "description": "A starter theme for Ghost theme development",
-    "demo": "https://starter.ghost.io",
+    "name": "mv-website-theme",
+    "description": "Personal Ghost theme",
+    "demo": "",
     "version": "1.0.0",
     "engines": {
         "ghost": ">=5.0.0"
