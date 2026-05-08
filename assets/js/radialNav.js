@@ -65,32 +65,44 @@ const buildArc = (id, cx, cy, r, items, fontSize, fillRef) => {
         fill: "none",
         stroke: "none",
     });
-    const texts = items.map((item, i) => {
-        let offset, anchor;
-        if (items.length === 1) {
-            offset = 50;
-            anchor = "middle";
-        } else {
-            offset = (i / (items.length - 1)) * 100;
-            anchor = i === 0 ? "start" : i === items.length - 1 ? "end" : "middle";
-        }
+    const anchors = items.map((item) => {
         const a = svg("a", { href: item.href, target: item.target || "_self" });
         const text = svg("text", {
             "font-size": fontSize,
-            "text-anchor": anchor,
+            "text-anchor": "start",
             class: "radial-nav-label",
             fill: fillRef,
         });
-        const tp = svg("textPath", {
-            href: `#${id}`,
-            startOffset: `${offset}%`,
-        });
+        // Provisional offset; layoutArc resets after measurement.
+        const tp = svg("textPath", { href: `#${id}`, startOffset: "0%" });
         tp.textContent = item.label;
         text.appendChild(tp);
         a.appendChild(text);
         return a;
     });
-    return [path, ...texts];
+    return { path, anchors };
+};
+
+// Equidistant gaps between word edges. First item starts at offset 0, last ends at the
+// path's end. Pure layout: requires the SVG to already be in the DOM so we can measure.
+const layoutArc = (anchors, pathLength) => {
+    if (anchors.length === 0) return;
+    if (anchors.length === 1) {
+        const text = anchors[0].querySelector("text");
+        const tp = text.querySelector("textPath");
+        text.setAttribute("text-anchor", "middle");
+        tp.setAttribute("startOffset", "50%");
+        return;
+    }
+    const widths = anchors.map((a) => a.querySelector("text").getComputedTextLength());
+    const totalText = widths.reduce((s, w) => s + w, 0);
+    const gap = Math.max(0, (pathLength - totalText) / (anchors.length - 1));
+    let cursor = 0;
+    anchors.forEach((a, i) => {
+        const tp = a.querySelector("textPath");
+        tp.setAttribute("startOffset", `${(cursor / pathLength) * 100}%`);
+        cursor += widths[i] + gap;
+    });
 };
 
 export default function radialNav() {
@@ -134,18 +146,33 @@ export default function radialNav() {
     root.appendChild(defs);
 
     const fillRef = "url(#radial-rainbow)";
+    const arcs = [];
 
     if (inner.length) {
-        const innerGroup = svg("g", { class: "radial-nav-arc radial-nav-arc--inner" });
-        for (const child of buildArc("radial-arc-inner", cx, cy, rInner, inner, 22, fillRef)) innerGroup.appendChild(child);
-        root.appendChild(innerGroup);
+        const group = svg("g", { class: "radial-nav-arc radial-nav-arc--inner" });
+        const built = buildArc("radial-arc-inner", cx, cy, rInner, inner, 22, fillRef);
+        group.appendChild(built.path);
+        for (const a of built.anchors) group.appendChild(a);
+        root.appendChild(group);
+        arcs.push(built);
     }
     if (outer.length) {
-        const outerGroup = svg("g", { class: "radial-nav-arc radial-nav-arc--outer" });
-        for (const child of buildArc("radial-arc-outer", cx, cy, rOuter, outer, 22, fillRef)) outerGroup.appendChild(child);
-        root.appendChild(outerGroup);
+        const group = svg("g", { class: "radial-nav-arc radial-nav-arc--outer" });
+        const built = buildArc("radial-arc-outer", cx, cy, rOuter, outer, 22, fillRef);
+        group.appendChild(built.path);
+        for (const a of built.anchors) group.appendChild(a);
+        root.appendChild(group);
+        arcs.push(built);
     }
 
     document.body.classList.add("has-radial-nav");
     menu.appendChild(root);
+
+    const apply = () => {
+        for (const arc of arcs) layoutArc(arc.anchors, arc.path.getTotalLength());
+    };
+    // Initial layout, plus relayout when fonts finish loading (Pixelify Sans is async).
+    apply();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(apply);
+    addEventListener("resize", apply, { passive: true });
 }
