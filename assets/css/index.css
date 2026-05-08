@@ -25,6 +25,9 @@ production stylesheet in assets/built/screen.css using: npm run dev
 @import "ghost/pagination.css";
 @import "ghost/comments.css";
 
+/* Custom overrides (last so they win specificity ties) */
+@import "custom.css";
+
 
 
 /* Main - Your styles here! Edit below
