@@ -239,20 +239,15 @@ a:hover .gh-card-title, a:hover .gh-article-title {
 #sodo-search-root { display: none !important; }
 
 
-/* ASCII shooting stars in the backdrop
+/* ASCII shooting stars
 /* ---------------------------------------------------------- */
 
-/* Lift content above the stars layer; let body white show through gh-viewport. */
-.gh-viewport {
-    position: relative;
-    z-index: 1;
-    background: transparent;
-}
-
+/* Sits above content but ignores pointer events, so clicks pass through. Putting it on top
+   sidesteps the gh-viewport background rule that would otherwise cover a behind-content layer. */
 .shooting-stars {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: 9999;
     pointer-events: none;
     overflow: hidden;
 }
@@ -263,9 +258,9 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     left: 0;
     transform-origin: 0 0;
     font-family: var(--font-display);
-    font-size: 16px;
-    letter-spacing: 0.05em;
-    color: oklch(45% 0.005 270);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: oklch(30% 0.005 270);
     white-space: pre;
     will-change: transform, opacity;
     /* Fade the trail away from the head (head sits at left edge of the unrotated string). */

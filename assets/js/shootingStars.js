@@ -32,7 +32,6 @@ const ensureLayer = () => {
 
 const spawn = () => {
     if (active >= MAX_CONCURRENT) return;
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (document.hidden) return;
     active++;
 
@@ -56,8 +55,8 @@ const spawn = () => {
     const anim = star.animate(
         [
             { transform: `translate(${startX}px, ${startY}px) rotate(${TRAIL_ROTATION_DEG}deg)`, opacity: 0 },
-            { opacity: 0.55, offset: 0.15 },
-            { opacity: 0.55, offset: 0.85 },
+            { opacity: 1, offset: 0.15 },
+            { opacity: 1, offset: 0.85 },
             { transform: `translate(${endX}px, ${endY}px) rotate(${TRAIL_ROTATION_DEG}deg)`, opacity: 0 },
         ],
         {
@@ -79,6 +78,8 @@ const tick = () => {
 };
 
 export default function shootingStars() {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setTimeout(tick, 1500 + Math.random() * 3000);
+    console.log("[shootingStars] init; reduced-motion =",
+        matchMedia("(prefers-reduced-motion: reduce)").matches);
+    spawn(); // fire one immediately so we can confirm visibility
+    tick();
 }
