@@ -139,15 +139,13 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     }
 }
 
-/* Site title (the blog name).
-   - Floor of 5rem (50px) prevents it shrinking past readability on phones.
-   - 6.5vw scales gently — half the rate of the rainbow, so it doesn't feel like it's
-     collapsing as the window narrows.
-   - Max 9rem so it can grow generously on wide screens. */
+/* Site title — scales with viewport so it spans nearly the full width on mobile.
+   13vw makes "michael veale" fill ~95% of the viewport (Pixelify chars ≈ 0.55em wide × 13 chars).
+   Capped at 9rem (90px) on desktop so it doesn't get absurdly large. */
 .gh-head-logo {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(5rem, 6.5vw, 9rem);
+    font-size: clamp(2rem, 13vw, 9rem);
     line-height: 1;
     letter-spacing: 0.02em;
 }
