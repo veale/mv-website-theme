@@ -221,6 +221,10 @@ a:hover .gh-card-title, a:hover .gh-article-title {
 
 .gh-foot-meta { display: none; }
 
+/* Hide the rel=me Mastodon verification link in the footer code injection.
+   It still exists in the DOM so Mastodon can verify the profile. */
+a[rel~="me"] { display: none; }
+
 /* Hide Ghost search trigger + modal */
 [data-ghost-search],
 #sodo-search-root { display: none !important; }
