@@ -141,8 +141,10 @@ a:hover .gh-card-title, a:hover .gh-article-title {
 
 /* Site title — scales with viewport so it spans nearly the full width on mobile.
    13vw makes "michael veale" fill ~95% of the viewport (Pixelify chars ≈ 0.55em wide × 13 chars).
-   Capped at 9rem (90px) on desktop so it doesn't get absurdly large. */
-.gh-head-logo {
+   Capped at 9rem (90px) on desktop so it doesn't get absurdly large.
+   #gh-head prefix is required to beat ghost/header.css's mobile rule
+   (`@media (max-width:900px) { #gh-head .gh-head-logo { font-size: 2.2rem } }`). */
+#gh-head .gh-head-logo {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(2rem, 13vw, 9rem);
