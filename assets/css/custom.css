@@ -139,11 +139,11 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     }
 }
 
-/* Site title (the blog name) — bigger, bolder, in the pixel font */
+/* Site title (the blog name) — scales with viewport so it matches the radial nav width on mobile */
 .gh-head-logo {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(4.4rem, 8vw, 7.2rem);
+    font-size: clamp(2.8rem, 12vw, 8rem);
     line-height: 1;
     letter-spacing: 0.02em;
 }
@@ -173,7 +173,6 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     display: block;
     width: min(900px, 96vw);
     height: auto;
-    margin-bottom: -1.5rem; /* tuck title up against arc */
     overflow: visible;
 }
 

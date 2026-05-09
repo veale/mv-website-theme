@@ -192,12 +192,18 @@ export default function radialNav() {
     const radii = Array.from({ length: arcCount }, (_, i) => baseR + i * spacing);
     const groups = distributeItems(items, radii);
 
-    const W = 900;
-    const padding = 20;
+    // Tight viewBox so the outer arc fills (most of) the SVG width regardless of arc count.
+    // CSS scales the SVG to viewport width; this keeps the arc proportion stable as more rows
+    // are added, and reserves padding above the top arc so descenders/glyph tops don't clip.
     const rMax = radii[radii.length - 1];
-    const H = rMax + padding * 2;
+    const fontSize = 22;
+    const padX = 40;             // horizontal breathing room beyond outermost arc
+    const padTop = fontSize + 8; // ascenders rise this far above the path baseline
+    const padBottom = 4;         // small gap before the title row
+    const W = 2 * (rMax + padX);
+    const H = rMax + padTop + padBottom;
     const cx = W / 2;
-    const cy = H - padding;
+    const cy = H - padBottom;
 
     const root = svg("svg", {
         class: "radial-nav",
