@@ -98,13 +98,11 @@ const buildArc = (id, cx, cy, r, items, fontSize, fillRef) => {
     return { path, anchors };
 };
 
-// Equidistant gaps between word edges. First item is anchored at the path's start (start of
-// arc, offset 0%, text-anchor=start), last is anchored at the end (offset 100%, text-anchor=end)
-// so endpoints are flush regardless of measurement precision. Middle items distribute by the
-// computed cursor position. Each text element also gets `textLength` set to its measured width
-// + `lengthAdjust=spacingAndGlyphs`, which locks the rendered length and prevents overflow off
-// the end of the path (which iOS otherwise renders along the path's tangent — straight down
-// at the right end, dropping letters below the SVG).
+// Equidistant gaps between word edges. First item is anchored at the path's start (offset 0%,
+// text-anchor=start), last at the end (offset 100%, text-anchor=end) so endpoints are flush
+// regardless of measurement precision. Middle items distribute by computed cursor position.
+// We deliberately do NOT set textLength — iOS Safari treats it as a hard clip boundary and
+// truncates the last glyph mid-render when its subpixel measurement disagrees with ours.
 const layoutArc = (anchors, pathLength) => {
     if (anchors.length === 0) return;
     if (anchors.length === 1) {
@@ -122,8 +120,8 @@ const layoutArc = (anchors, pathLength) => {
     anchors.forEach((a, i) => {
         const text = a.querySelector("text");
         const tp = a.querySelector("textPath");
-        text.setAttribute("textLength", widths[i]);
-        text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        text.removeAttribute("textLength");
+        text.removeAttribute("lengthAdjust");
         if (i === last) {
             text.setAttribute("text-anchor", "end");
             tp.setAttribute("startOffset", "100%");
