@@ -149,46 +149,32 @@ a:hover .gh-card-title, a:hover .gh-article-title {
 }
 
 
-/* Radial navigation
-/* ---------------------------------------------------------- */
-
-/* When JS injects the SVG, hide the original list on desktop and let the SVG arcs sit centred above the title. */
-@media (min-width: 901px) {
-    .has-radial-nav .gh-head-inner {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "menu"
-            "brand"
-            "actions";
-        grid-gap: 0;
-        align-items: center;
-        justify-items: center;
-    }
-    .has-radial-nav .gh-head-menu { grid-area: menu; }
-    .has-radial-nav .gh-head-brand { grid-area: brand; max-width: none; }
-    .has-radial-nav .gh-head-actions { grid-area: actions; padding-top: 1rem; }
-
-    .has-radial-nav .gh-head-menu .nav { display: none; }
-    .has-radial-nav .gh-head-menu {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-    .has-radial-nav .gh-head-logo {
-        padding: 0;
-    }
+/* Radial navigation — shown at every width; replaces the burger menu on mobile too. */
+.has-radial-nav .gh-head-inner {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+        "menu"
+        "brand"
+        "actions" !important;
+    grid-gap: 0 !important;
+    align-items: center;
+    justify-items: center;
 }
+.has-radial-nav .gh-head-menu { grid-area: menu; display: flex !important; justify-content: center; width: 100%; }
+.has-radial-nav .gh-head-brand { grid-area: brand; max-width: none !important; }
+.has-radial-nav .gh-head-actions { grid-area: actions; padding-top: 1rem; display: flex !important; }
 
-/* SVG only shown on desktop */
-.radial-nav { display: none; }
-@media (min-width: 901px) {
-    .radial-nav {
-        display: block;
-        width: min(900px, 90vw);
-        height: auto;
-        margin-bottom: -1.5rem; /* tuck title up against arc */
-        overflow: visible;
-    }
+/* Hide the plain text list and the burger — SVG arcs replace them. */
+.has-radial-nav .gh-head-menu .nav { display: none !important; }
+.has-radial-nav .gh-burger { display: none !important; }
+.has-radial-nav .gh-head-logo { padding: 0; }
+
+.radial-nav {
+    display: block;
+    width: min(900px, 96vw);
+    height: auto;
+    margin-bottom: -1.5rem; /* tuck title up against arc */
+    overflow: visible;
 }
 
 .radial-nav text {

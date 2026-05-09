@@ -147,6 +147,33 @@ const layoutArc = (anchors, pathLength) => {
     });
 };
 
+// Decide how many arcs and how to fill each, given an item count. Inner arcs are smaller and
+// hold proportionally fewer items. Caps each arc roughly to its share of total circumference,
+// then assigns the remainder to the outer arc so nothing is dropped.
+const distributeItems = (items, radii) => {
+    const k = radii.length;
+    const totalR = radii.reduce((s, r) => s + r, 0);
+    const groups = [];
+    let placed = 0;
+    for (let i = 0; i < k; i++) {
+        const isLast = i === k - 1;
+        const share = isLast
+            ? items.length - placed
+            : Math.round((items.length * radii[i]) / totalR);
+        groups.push(items.slice(placed, placed + share));
+        placed += share;
+    }
+    return groups;
+};
+
+// Pick the number of arcs to use based on item count.
+const chooseArcCount = (n) => {
+    if (n <= 3) return 1;
+    if (n <= 7) return 2;
+    if (n <= 12) return 3;
+    return 4;
+};
+
 export default function radialNav() {
     const menu = document.querySelector(".gh-head-menu");
     if (!menu) return;
@@ -159,15 +186,18 @@ export default function radialNav() {
         target: a.getAttribute("target"),
     }));
 
-    const inner = items.slice(0, 3);
-    const outer = items.slice(3);
+    const arcCount = chooseArcCount(items.length);
+    const baseR = 150;
+    const spacing = 42;
+    const radii = Array.from({ length: arcCount }, (_, i) => baseR + i * spacing);
+    const groups = distributeItems(items, radii);
 
     const W = 900;
-    const H = 280;
+    const padding = 20;
+    const rMax = radii[radii.length - 1];
+    const H = rMax + padding * 2;
     const cx = W / 2;
-    const cy = H - 10;
-    const rOuter = 230;
-    const rInner = 150;
+    const cy = H - padding;
 
     const root = svg("svg", {
         class: "radial-nav",
@@ -185,29 +215,23 @@ export default function radialNav() {
     defs.appendChild(buildRainbowGradient("radial-rainbow", 0, W / 2, !reduceMotion));
     // Vertical sharp-band gradient for hover. ~28px per band, repeating, scrolling downward fast.
     defs.appendChild(buildBandGradient("radial-bands", 28, BRIGHT_STOPS, !reduceMotion));
-    defs.appendChild(svg("path", { id: "radial-arc-inner", d: arcPath(cx, cy, rInner), fill: "none" }));
-    defs.appendChild(svg("path", { id: "radial-arc-outer", d: arcPath(cx, cy, rOuter), fill: "none" }));
+    radii.forEach((r, i) => {
+        defs.appendChild(svg("path", { id: `radial-arc-${i}`, d: arcPath(cx, cy, r), fill: "none" }));
+    });
     root.appendChild(defs);
 
     const fillRef = "url(#radial-rainbow)";
     const arcs = [];
 
-    if (inner.length) {
-        const group = svg("g", { class: "radial-nav-arc radial-nav-arc--inner" });
-        const built = buildArc("radial-arc-inner", cx, cy, rInner, inner, 22, fillRef);
-        group.appendChild(built.path);
-        for (const a of built.anchors) group.appendChild(a);
-        root.appendChild(group);
+    groups.forEach((group, i) => {
+        if (!group.length) return;
+        const g = svg("g", { class: `radial-nav-arc radial-nav-arc--${i}` });
+        const built = buildArc(`radial-arc-${i}`, cx, cy, radii[i], group, 22, fillRef);
+        g.appendChild(built.path);
+        for (const a of built.anchors) g.appendChild(a);
+        root.appendChild(g);
         arcs.push(built);
-    }
-    if (outer.length) {
-        const group = svg("g", { class: "radial-nav-arc radial-nav-arc--outer" });
-        const built = buildArc("radial-arc-outer", cx, cy, rOuter, outer, 22, fillRef);
-        group.appendChild(built.path);
-        for (const a of built.anchors) group.appendChild(a);
-        root.appendChild(group);
-        arcs.push(built);
-    }
+    });
 
     document.body.classList.add("has-radial-nav");
     menu.appendChild(root);
