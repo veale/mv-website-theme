@@ -98,8 +98,13 @@ const buildArc = (id, cx, cy, r, items, fontSize, fillRef) => {
     return { path, anchors };
 };
 
-// Equidistant gaps between word edges. First item starts at offset 0, last ends at the
-// path's end. Pure layout: requires the SVG to already be in the DOM so we can measure.
+// Equidistant gaps between word edges. First item is anchored at the path's start (start of
+// arc, offset 0%, text-anchor=start), last is anchored at the end (offset 100%, text-anchor=end)
+// so endpoints are flush regardless of measurement precision. Middle items distribute by the
+// computed cursor position. Each text element also gets `textLength` set to its measured width
+// + `lengthAdjust=spacingAndGlyphs`, which locks the rendered length and prevents overflow off
+// the end of the path (which iOS otherwise renders along the path's tangent — straight down
+// at the right end, dropping letters below the SVG).
 const layoutArc = (anchors, pathLength) => {
     if (anchors.length === 0) return;
     if (anchors.length === 1) {
@@ -112,10 +117,20 @@ const layoutArc = (anchors, pathLength) => {
     const widths = anchors.map((a) => a.querySelector("text").getComputedTextLength());
     const totalText = widths.reduce((s, w) => s + w, 0);
     const gap = Math.max(0, (pathLength - totalText) / (anchors.length - 1));
+    const last = anchors.length - 1;
     let cursor = 0;
     anchors.forEach((a, i) => {
+        const text = a.querySelector("text");
         const tp = a.querySelector("textPath");
-        tp.setAttribute("startOffset", `${(cursor / pathLength) * 100}%`);
+        text.setAttribute("textLength", widths[i]);
+        text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        if (i === last) {
+            text.setAttribute("text-anchor", "end");
+            tp.setAttribute("startOffset", "100%");
+        } else {
+            text.setAttribute("text-anchor", "start");
+            tp.setAttribute("startOffset", `${(cursor / pathLength) * 100}%`);
+        }
         cursor += widths[i] + gap;
     });
 };
@@ -219,8 +234,10 @@ export default function radialNav() {
     const apply = () => {
         for (const arc of arcs) layoutArc(arc.anchors, arc.path.getTotalLength());
     };
-    // Initial layout, plus relayout when fonts finish loading (Pixelify Sans is async).
+    // Initial layout, plus a single relayout when fonts finish loading. We deliberately do NOT
+    // listen for resize: path lengths are in viewBox units (constant), and iOS Safari fires
+    // resize during scroll when the address bar toggles, which would re-measure and produce
+    // sub-pixel jitter in the text positions.
     apply();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(apply);
-    addEventListener("resize", apply, { passive: true });
 }
