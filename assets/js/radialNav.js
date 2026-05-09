@@ -43,7 +43,11 @@ const BRIGHT_STOPS = [
     "oklch(72% 0.25 25)",
 ];
 
-const buildRainbowGradient = (id, x1, x2, animate) => {
+// Linear rainbow gradient that rotates around (cx, cy) — the arc centre. Because the gradient
+// repeats horizontally, rotating it makes colours sweep around the arcs: every point on the
+// curve cycles through the palette over one full rotation, with a phase offset matching its
+// angular position. Net visual: rainbow flows along the arc.
+const buildRainbowGradient = (id, x1, x2, cx, cy, animate) => {
     const grad = svg("linearGradient", {
         id,
         gradientUnits: "userSpaceOnUse",
@@ -57,13 +61,12 @@ const buildRainbowGradient = (id, x1, x2, animate) => {
         }));
     });
     if (animate) {
-        const span = x2 - x1;
         grad.appendChild(svg("animateTransform", {
             attributeName: "gradientTransform",
-            type: "translate",
-            from: "0 0",
-            to: `${span} 0`,
-            dur: "24s",
+            type: "rotate",
+            from: `0 ${cx} ${cy}`,
+            to: `360 ${cx} ${cy}`,
+            dur: "90s",
             repeatCount: "indefinite",
         }));
     }
@@ -218,7 +221,7 @@ export default function radialNav() {
 
     const defs = svg("defs");
     // One repeating gradient half the SVG width — translating by that span loops seamlessly.
-    defs.appendChild(buildRainbowGradient("radial-rainbow", 0, W / 2, !reduceMotion));
+    defs.appendChild(buildRainbowGradient("radial-rainbow", 0, W / 2, cx, cy, !reduceMotion));
     // Vertical sharp-band gradient for hover. ~28px per band, repeating, scrolling downward fast.
     defs.appendChild(buildBandGradient("radial-bands", 28, BRIGHT_STOPS, !reduceMotion));
     radii.forEach((r, i) => {
