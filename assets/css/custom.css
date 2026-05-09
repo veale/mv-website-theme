@@ -85,9 +85,7 @@ h1, h2, h3, h4, h5, h6,
     to   { --rainbow-shift: 100%; }
 }
 
-/* Bright bands palette for the hover "screen drop" effect.
-   Sharp stops (each color occupies exactly 1/8 of the gradient) so
-   transitions between bands show as a hard edge sliding down. */
+/* Brighter rainbow palette used for the hover/touch effect. Same colours as SVG BRIGHT_STOPS. */
 :root {
     --rainbow-bright:
         oklch(72% 0.25 25),
@@ -98,35 +96,56 @@ h1, h2, h3, h4, h5, h6,
         oklch(65% 0.28 265),
         oklch(65% 0.30 320),
         oklch(72% 0.25 25);
-    --rainbow-bands: linear-gradient(
-        to bottom,
-        oklch(72% 0.25 25)  0%,    oklch(72% 0.25 25)  12.5%,
-        oklch(78% 0.20 60)  12.5%, oklch(78% 0.20 60)  25%,
-        oklch(88% 0.20 100) 25%,   oklch(88% 0.20 100) 37.5%,
-        oklch(78% 0.25 145) 37.5%, oklch(78% 0.25 145) 50%,
-        oklch(75% 0.18 200) 50%,   oklch(75% 0.18 200) 62.5%,
-        oklch(65% 0.28 265) 62.5%, oklch(65% 0.28 265) 75%,
-        oklch(65% 0.30 320) 75%,   oklch(65% 0.30 320) 87.5%,
-        oklch(72% 0.25 25)  87.5%, oklch(72% 0.25 25)  100%
-    );
 }
 
-@keyframes rainbow-drop {
-    from { background-position-y: 0%; }
-    to   { background-position-y: 100%; }
+/* Animatable angle for the conic gradient. @property gives it a type so the keyframes
+   actually interpolate (without this, custom properties step rather than tween). */
+@property --hover-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
 }
 
-/* Hover: swap to vertical bands and animate them downward. */
+@keyframes rainbow-arc-spin {
+    from { --hover-angle: 0deg; }
+    to   { --hover-angle: 360deg; }
+}
+
+/* Hover/focus/active: bright conic-gradient that rotates fast. Conic gradient is the rectangular
+   analogue of rotating a linear gradient around an arc — colours sweep angularly through the text. */
 h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover,
 .gh-head-title:hover, .site-title:hover, .gh-head-logo:hover,
 .gh-article-title:hover, .gh-card-title:hover,
 .gh-canvas h1:hover, .gh-canvas h2:hover, .gh-canvas h3:hover,
 a:hover h1, a:hover h2, a:hover h3, a:hover h4, a:hover h5, a:hover h6,
-a:hover .gh-card-title, a:hover .gh-article-title {
-    background-image: var(--rainbow-bands);
-    background-size: 100% 800%;
-    background-position-x: 0;
-    animation: rainbow-drop 1.2s linear infinite;
+a:hover .gh-card-title, a:hover .gh-article-title,
+a:focus h1, a:focus h2, a:focus h3, a:focus .gh-card-title, a:focus .gh-article-title,
+a:active h1, a:active h2, a:active h3, a:active .gh-card-title, a:active .gh-article-title,
+.gh-head-logo:focus, .gh-head-logo:active {
+    background-image: conic-gradient(from var(--hover-angle), var(--rainbow-bright));
+    background-size: 100% 100%;
+    background-position: 0 0;
+    animation: rainbow-arc-spin 6s linear infinite;
+}
+
+/* Touch-only attract pulse for headings/title — periodic bright sweep so iPhone users see
+   the effect without needing to hover. Long cycle so it's not distracting. */
+@media (hover: none) {
+    .gh-head-logo,
+    .gh-card-title {
+        animation: rainbow-touch-pulse 18s ease-in-out infinite;
+    }
+    .gh-card-title { animation-delay: -6s; } /* offset so titles don't pulse in lockstep */
+}
+@keyframes rainbow-touch-pulse {
+    0%, 80%, 100% {
+        background-image: linear-gradient(90deg, var(--rainbow-stops));
+        background-size: 300% 100%;
+    }
+    85%, 95% {
+        background-image: conic-gradient(from var(--hover-angle, 0deg), var(--rainbow-bright));
+        background-size: 100% 100%;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -189,11 +208,29 @@ a:hover .gh-card-title, a:hover .gh-article-title {
 
 .radial-nav a { opacity: 0.85; }
 .radial-nav a:hover,
-.radial-nav a:focus { opacity: 1; }
+.radial-nav a:focus,
+.radial-nav a:active { opacity: 1; }
 
 .radial-nav a:hover text,
-.radial-nav a:focus text {
-    fill: url(#radial-bands);
+.radial-nav a:focus text,
+.radial-nav a:active text {
+    fill: url(#radial-bright);
+}
+
+/* Touch devices (iPhone etc.) can't hover. Periodically pulse to bright so the effect is
+   discoverable. The fill swap is a hard switch (SVG can't tween between url() fills), so we
+   use a 12s cycle with brief bright moments — a kind of attract-mode shimmer. */
+@media (hover: none) {
+    .radial-nav a text {
+        animation: radial-bright-pulse 12s ease-in-out infinite;
+    }
+    .radial-nav-arc--1 a text { animation-delay: -3s; }
+    .radial-nav-arc--2 a text { animation-delay: -6s; }
+    .radial-nav-arc--3 a text { animation-delay: -9s; }
+    @keyframes radial-bright-pulse {
+        0%, 80%, 100% { fill: url(#radial-rainbow); }
+        85%, 95%      { fill: url(#radial-bright); }
+    }
 }
 
 

@@ -47,16 +47,16 @@ const BRIGHT_STOPS = [
 // repeats horizontally, rotating it makes colours sweep around the arcs: every point on the
 // curve cycles through the palette over one full rotation, with a phase offset matching its
 // angular position. Net visual: rainbow flows along the arc.
-const buildRainbowGradient = (id, x1, x2, cx, cy, animate) => {
+const buildRotatingRainbow = (id, stops, x1, x2, cx, cy, dur, animate) => {
     const grad = svg("linearGradient", {
         id,
         gradientUnits: "userSpaceOnUse",
         x1, y1: 0, x2, y2: 0,
         spreadMethod: "repeat",
     });
-    RAINBOW_STOPS.forEach((color, i) => {
+    stops.forEach((color, i) => {
         grad.appendChild(svg("stop", {
-            offset: `${(i / (RAINBOW_STOPS.length - 1)) * 100}%`,
+            offset: `${(i / (stops.length - 1)) * 100}%`,
             "stop-color": color,
         }));
     });
@@ -66,37 +66,7 @@ const buildRainbowGradient = (id, x1, x2, cx, cy, animate) => {
             type: "rotate",
             from: `0 ${cx} ${cy}`,
             to: `360 ${cx} ${cy}`,
-            dur: "90s",
-            repeatCount: "indefinite",
-        }));
-    }
-    return grad;
-};
-
-// Vertical gradient with hard-edged color bands; one band per `bandPx` of vertical space.
-// Tiles via spreadMethod=repeat. SMIL animates a translateY by one full pattern length so
-// a band appears to drop continuously through the text.
-const buildBandGradient = (id, bandPx, colors, animate) => {
-    const totalPx = bandPx * colors.length;
-    const grad = svg("linearGradient", {
-        id,
-        gradientUnits: "userSpaceOnUse",
-        x1: 0, y1: 0, x2: 0, y2: totalPx,
-        spreadMethod: "repeat",
-    });
-    colors.forEach((color, i) => {
-        const start = (i / colors.length) * 100;
-        const end = ((i + 1) / colors.length) * 100;
-        grad.appendChild(svg("stop", { offset: `${start}%`, "stop-color": color }));
-        grad.appendChild(svg("stop", { offset: `${end}%`, "stop-color": color }));
-    });
-    if (animate) {
-        grad.appendChild(svg("animateTransform", {
-            attributeName: "gradientTransform",
-            type: "translate",
-            from: "0 0",
-            to: `0 ${totalPx}`,
-            dur: "1.4s",
+            dur,
             repeatCount: "indefinite",
         }));
     }
@@ -221,9 +191,10 @@ export default function radialNav() {
 
     const defs = svg("defs");
     // One repeating gradient half the SVG width — translating by that span loops seamlessly.
-    defs.appendChild(buildRainbowGradient("radial-rainbow", 0, W / 2, cx, cy, !reduceMotion));
-    // Vertical sharp-band gradient for hover. ~28px per band, repeating, scrolling downward fast.
-    defs.appendChild(buildBandGradient("radial-bands", 28, BRIGHT_STOPS, !reduceMotion));
+    // Slow ambient sweep around the arcs (default state).
+    defs.appendChild(buildRotatingRainbow("radial-rainbow", RAINBOW_STOPS, 0, W / 2, cx, cy, "90s", !reduceMotion));
+    // Fast bright sweep for hover/focus/active.
+    defs.appendChild(buildRotatingRainbow("radial-bright", BRIGHT_STOPS, 0, W / 2, cx, cy, "6s", !reduceMotion));
     radii.forEach((r, i) => {
         defs.appendChild(svg("path", { id: `radial-arc-${i}`, d: arcPath(cx, cy, r), fill: "none" }));
     });
