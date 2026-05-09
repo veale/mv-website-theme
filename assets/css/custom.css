@@ -139,11 +139,15 @@ a:hover .gh-card-title, a:hover .gh-article-title {
     }
 }
 
-/* Site title (the blog name) — scales with viewport so it matches the radial nav width on mobile */
+/* Site title (the blog name).
+   - Floor of 5rem (50px) prevents it shrinking past readability on phones.
+   - 6.5vw scales gently — half the rate of the rainbow, so it doesn't feel like it's
+     collapsing as the window narrows.
+   - Max 9rem so it can grow generously on wide screens. */
 .gh-head-logo {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.8rem, 12vw, 8rem);
+    font-size: clamp(5rem, 6.5vw, 9rem);
     line-height: 1;
     letter-spacing: 0.02em;
 }
